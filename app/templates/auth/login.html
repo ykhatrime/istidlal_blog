@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<section class="secure-login-page">
+  <div class="secure-login-card">
+    <div class="login-shield">🛡️</div>
+
+    <div class="login-head">
+      <span>{{ 'تحقق آمن' if lang == 'ar' else 'Secure Access' }}</span>
+      <h1>{{ t.login }}</h1>
+      <p>
+        {{ 'تمت إضافة حماية ضد الروبوتات ومحاولات الدخول المتكررة.' if lang == 'ar' else 'Protected against bots and repeated login attempts.' }}
+      </p>
+    </div>
+
+    {% if remaining and remaining > 0 %}
+      <div class="security-alert">
+        {{ 'تم إيقاف تسجيل الدخول مؤقتًا. حاول بعد' if lang == 'ar' else 'Login is temporarily locked. Try again after' }}
+        <strong>{{ remaining }}</strong>
+        {{ 'ثانية' if lang == 'ar' else 'seconds' }}.
+      </div>
+    {% endif %}
+
+    <form method="post" class="secure-login-form" autocomplete="off" novalidate><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <!-- Honeypot field: should stay empty. Hidden from users but visible to simple bots. -->
+      <div class="hp-field" aria-hidden="true">
+        <label>Website</label>
+        <input type="text" name="website" tabindex="-1" autocomplete="off">
+      </div>
+
+      <div class="field-wrap">
+        <span>👤</span>
+        <input name="username" required placeholder="{{ t.username }}" autocomplete="username" {% if remaining and remaining > 0 %}disabled{% endif %}>
+      </div>
+
+      <div class="field-wrap">
+        <span>🔒</span>
+        <input type="password" name="password" required placeholder="{{ t.password }}" autocomplete="current-password" {% if remaining and remaining > 0 %}disabled{% endif %}>
+      </div>
+
+      <div class="human-check">
+        <div>
+          <strong>{{ 'التحقق من أنك شخص' if lang == 'ar' else 'Human verification' }}</strong>
+          <small>{{ 'أجب على السؤال التالي قبل تسجيل الدخول' if lang == 'ar' else 'Answer this question before logging in' }}</small>
+        </div>
+        <div class="captcha-box">
+          <span>{{ challenge }}</span>
+          <b>=</b>
+          <input type="number" name="captcha_answer" inputmode="numeric" required placeholder="؟" {% if remaining and remaining > 0 %}disabled{% endif %}>
+        </div>
+      </div>
+
+      <button class="btn full secure-btn" {% if remaining and remaining > 0 %}disabled{% endif %}>
+        {{ t.login }}
+      </button>
+
+      <div class="security-notes">
+        <span>✓ CSRF</span>
+        <span>✓ Honeypot</span>
+        <span>✓ Rate limit</span>
+        <span>✓ Human Check</span>
+      </div>
+
+      <p class="hint">admin / admin123</p>
+    </form>
+  </div>
+</section>
+{% endblock %}

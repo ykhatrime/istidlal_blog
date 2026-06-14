@@ -1,0 +1,20 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+<div class="admin-head"><div><span class="section-kicker">{{ 'إدارة الأعمال' if lang == 'ar' else 'Portfolio management' }}</span><h1>{{ t.projects }}</h1></div><a class="btn" href="{{ url_for('admin.project_form', lang=lang) }}">+ {{ t.new_project }}</a></div>
+<div class="table-tools"><input type="search" data-table-search placeholder="{{ 'بحث سريع في الجدول...' if lang == 'ar' else 'Quick table search...' }}"></div>
+<div class="table-card">
+<table data-table>
+  <tr><th>{{ t.title }} AR</th><th>{{ t.title }} EN</th><th>{{ 'مميز' if lang == 'ar' else 'Featured' }}</th><th>{{ t.comments }}</th><th>Status</th><th>{{ t.actions }}</th></tr>
+  {% for item in items %}
+  <tr>
+    <td>{{ item.title_ar }}</td>
+    <td>{{ item.title_en }}</td>
+    <td>{{ '⭐' if item.is_featured else '-' }}</td>
+    <td><a href="{{ url_for('admin.comments', lang=lang, type='project', project_id=item.id) }}">{{ item.comments.filter_by(deleted_at=None).count() }}</a></td>
+    <td><span class="status {{ 'ok' if item.is_published else 'draft' }}">{{ t.published if item.is_published else t.draft }}</span></td>
+    <td><a class="btn mini" href="{{ url_for('admin.project_form', lang=lang, item_id=item.id) }}">{{ t.edit }}</a><form method="post" action="{{ url_for('admin.delete_project', lang=lang, item_id=item.id) }}" class="inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button>{{ 'أرشفة' if lang == 'ar' else 'Archive' }}</button></form></td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

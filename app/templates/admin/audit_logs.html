@@ -1,0 +1,22 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+<div class="admin-head"><div><span class="section-kicker">{{ 'تتبع العمليات الإدارية' if lang == 'ar' else 'Administrative activity tracking' }}</span><h1>{{ 'سجل العمليات' if lang == 'ar' else 'Audit log' }}</h1></div></div>
+<div class="table-card">
+<table data-table>
+  <tr><th>Date</th><th>{{ 'المستخدم' if lang == 'ar' else 'User' }}</th><th>{{ 'الإجراء' if lang == 'ar' else 'Action' }}</th><th>{{ 'النوع' if lang == 'ar' else 'Entity' }}</th><th>ID</th><th>{{ 'التفاصيل' if lang == 'ar' else 'Details' }}</th><th>IP</th></tr>
+  {% for item in items %}
+  <tr>
+    <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+    <td>{{ item.user.username if item.user else '-' }}</td>
+    <td>{{ item.action }}</td>
+    <td>{{ item.entity_type or '-' }}</td>
+    <td>{{ item.entity_id or '-' }}</td>
+    <td>{{ item.details or '-' }}</td>
+    <td>{{ item.ip_address or '-' }}</td>
+  </tr>
+  {% else %}
+  <tr><td colspan="7" class="hint">{{ 'لا توجد عمليات مسجلة بعد' if lang == 'ar' else 'No audit records yet' }}</td></tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

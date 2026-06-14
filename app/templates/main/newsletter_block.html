@@ -1,0 +1,8 @@
+<section class="newsletter-box reveal">
+  <div class="newsletter-icon">✉</div>
+  <div><h2>{{ t.newsletter_title }}</h2><p>{{ t.newsletter_desc }}</p></div>
+  <form method="post" action="{{ url_for('main.subscribe', lang=lang) }}" class="newsletter-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="email" name="email" required placeholder="{{ t.email_placeholder }}">
+    <button class="btn">{{ t.subscribe }}</button>
+  </form>
+</section>

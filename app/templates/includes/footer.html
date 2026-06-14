@@ -1,0 +1,24 @@
+<footer class="footer">
+  <div class="footer-brand">
+    <span class="logo" aria-hidden="true">▥</span>
+    <h3>{{ t.site_name }}</h3>
+    <p>{{ t.hero_desc }}</p>
+  </div>
+  <div>
+    <h4>{{ t.contact }}</h4>
+    <p><a href="mailto:info@istidlal.net">info@istidlal.net</a><br><a href="#">linkedin.com/in/istidlal</a></p>
+  </div>
+  <div>
+    <h4>{{ 'روابط سريعة' if lang == 'ar' else 'Quick links' }}</h4>
+    <a href="{{ url_for('main.articles', lang=lang) }}">{{ t.articles }}</a>
+    <a href="{{ url_for('main.projects', lang=lang) }}">{{ t.projects }}</a>
+    <a href="{{ url_for('main.services', lang=lang) }}">{{ t.services }}</a>
+    <a href="{{ url_for('main.explore', lang=lang) }}">{{ 'استكشف المحتوى' if lang == 'ar' else 'Explore content' }}</a>
+    <a href="{{ url_for('main.contact', lang=lang) }}">{{ t.contact }}</a>
+  </div>
+  <div>
+    <h4>{{ 'تابعني' if lang == 'ar' else 'Follow me' }}</h4>
+    <div class="socials"><a href="#" aria-label="LinkedIn">in</a><a href="#" aria-label="GitHub">GH</a><a href="mailto:info@istidlal.net" aria-label="Email">@</a></div>
+  </div>
+  <p class="copyright">© 2026 {{ t.site_name }} - {{ t.all_rights }}</p>
+</footer>

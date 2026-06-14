@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}403{% endblock %}
+{% block content %}
+<section class="empty-state reveal"><div>🔒</div><h1>{{ 'ليست لديك صلاحية للوصول إلى هذه الصفحة' if lang == 'ar' else 'You do not have permission to access this page' }}</h1><a class="btn" href="{{ url_for('main.home', lang=lang) }}">{{ t.home }}</a></section>
+{% endblock %}

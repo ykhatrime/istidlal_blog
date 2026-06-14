@@ -1,0 +1,60 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-head reveal">
+  <div>
+    <span class="section-kicker">{{ 'مقالات عملية وتجارب' if lang == 'ar' else 'Practical articles and notes' }}</span>
+    <h1>{{ t.articles }}</h1>
+    <p>{{ 'ابحث باحتراف داخل العناوين، الملخصات، المحتوى، الأقسام والكلمات المفتاحية.' if lang == 'ar' else 'Search professionally across titles, excerpts, content, categories and tags.' }}</p>
+  </div>
+</section>
+
+<section class="advanced-search-card reveal">
+  <form method="get" action="{{ url_for('main.articles', lang=lang) }}" class="advanced-search-form">
+    <div class="search-main-field">
+      <span class="search-icon">⌕</span>
+      <input name="q" value="{{ q }}" autocomplete="off" placeholder="{{ 'ابحث عن مقال، تقنية، كلمة مفتاحية...' if lang == 'ar' else 'Search article, technology, keyword...' }}">
+    </div>
+    <div class="search-controls">
+      <select name="category">
+        <option value="">{{ 'كل الأقسام' if lang == 'ar' else 'All categories' }}</option>
+        {% for c in categories %}<option value="{{ c.slug }}" {{ 'selected' if selected_category and selected_category.id == c.id else '' }}>{{ c.name(lang) }}</option>{% endfor %}
+      </select>
+      <select name="tag">
+        <option value="">{{ 'كل الكلمات المفتاحية' if lang == 'ar' else 'All keywords' }}</option>
+        {% for tag in tags %}<option value="{{ tag.slug }}" {{ 'selected' if selected_tag and selected_tag.id == tag.id else '' }}>{{ tag.name }}</option>{% endfor %}
+      </select>
+      <select name="sort">
+        <option value="newest" {{ 'selected' if sort == 'newest' else '' }}>{{ 'الأحدث أولاً' if lang == 'ar' else 'Newest first' }}</option>
+        <option value="oldest" {{ 'selected' if sort == 'oldest' else '' }}>{{ 'الأقدم أولاً' if lang == 'ar' else 'Oldest first' }}</option>
+        <option value="title" {{ 'selected' if sort == 'title' else '' }}>{{ 'حسب العنوان' if lang == 'ar' else 'By title' }}</option>
+        <option value="views" {{ 'selected' if sort == 'views' else '' }}>{{ 'الأكثر مشاهدة' if lang == 'ar' else 'Most viewed' }}</option>
+      </select>
+      <button class="btn" type="submit">{{ 'بحث' if lang == 'ar' else 'Search' }}</button>
+      {% if has_filters %}<a class="btn outline" href="{{ url_for('main.articles', lang=lang) }}">{{ 'إزالة الفلاتر' if lang == 'ar' else 'Clear' }}</a>{% endif %}
+    </div>
+  </form>
+
+  <div class="search-meta-row">
+    <div class="result-pill"><strong>{{ total_results }}</strong><span>{{ 'نتيجة' if lang == 'ar' else 'results' }}</span></div>
+    <div class="active-filters">
+      {% if q %}<span>{{ 'بحث' if lang == 'ar' else 'Search' }}: {{ q }}</span>{% endif %}
+      {% if selected_category %}<span>{{ selected_category.name(lang) }}</span>{% endif %}
+      {% if selected_tag %}<span>#{{ selected_tag.name }}</span>{% endif %}
+    </div>
+  </div>
+</section>
+
+<div class="client-filter live-refine reveal">
+  <input type="search" data-card-search placeholder="{{ 'فلترة مباشرة داخل النتائج الظاهرة...' if lang == 'ar' else 'Live refine visible results...' }}">
+</div>
+
+{% if pagination.items %}
+<section class="grid page-grid" data-card-grid>
+  {% for article in pagination.items %}{% include 'main/partials_article_card.html' %}{% endfor %}
+</section>
+{% else %}
+<div class="empty-state reveal"><div>🔎</div><h3>{{ 'لا توجد مقالات مطابقة' if lang == 'ar' else 'No matching articles' }}</h3><p>{{ 'جرّب كلمات بحث أبسط أو أزل بعض الفلاتر.' if lang == 'ar' else 'Try simpler keywords or remove filters.' }}</p></div>
+{% endif %}
+
+{% include 'main/pagination.html' %}
+{% endblock %}

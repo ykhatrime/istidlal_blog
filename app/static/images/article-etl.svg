@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 520" role="img" aria-label="Data dashboard placeholder">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#0b2a5b"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+    <linearGradient id="bar" x1="0" x2="0" y1="0" y2="1"><stop stop-color="#67e8f9"/><stop offset="1" stop-color="#2563eb"/></linearGradient>
+  </defs>
+  <rect width="900" height="520" rx="44" fill="url(#bg)"/>
+  <circle cx="750" cy="85" r="8" fill="#93c5fd"/><circle cx="790" cy="85" r="8" fill="#93c5fd"/><circle cx="830" cy="85" r="8" fill="#93c5fd"/>
+  <rect x="86" y="105" width="728" height="325" rx="32" fill="white" opacity=".12" stroke="white" stroke-opacity=".25"/>
+  <rect x="140" y="288" width="88" height="96" rx="14" fill="url(#bar)"/>
+  <rect x="275" y="225" width="88" height="159" rx="14" fill="url(#bar)"/>
+  <rect x="410" y="268" width="88" height="116" rx="14" fill="url(#bar)"/>
+  <rect x="545" y="188" width="88" height="196" rx="14" fill="url(#bar)"/>
+  <rect x="680" y="250" width="88" height="134" rx="14" fill="url(#bar)"/>
+  <path d="M125 250c70-40 106 20 165-30 65-56 116-8 178-42 74-40 127 13 205-41" fill="none" stroke="#67e8f9" stroke-width="10" stroke-linecap="round" opacity=".9"/>
+  <text x="125" y="165" font-family="Arial" font-size="40" font-weight="700" fill="#fff">Data Insights</text>
+</svg>

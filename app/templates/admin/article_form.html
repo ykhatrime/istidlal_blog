@@ -1,0 +1,107 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<h1>{{ t.new_article }}</h1>
+
+<form method="post" enctype="multipart/form-data" class="form-card admin-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <div class="two">
+    <input name="title_ar" required value="{{ item.title_ar or '' }}" placeholder="العنوان بالعربية">
+    <input name="title_en" required value="{{ item.title_en or '' }}" placeholder="Title in English">
+  </div>
+
+  <input name="slug" required value="{{ item.slug or '' }}" placeholder="slug-example">
+
+  <details class="admin-details">
+    <summary>{{ 'إعدادات SEO والمشاركة' if lang == 'ar' else 'SEO & sharing settings' }}</summary>
+    <div class="two">
+      <input name="seo_title_ar" maxlength="220" value="{{ item.seo_title_ar or '' }}" placeholder="SEO title AR">
+      <input name="seo_title_en" maxlength="220" value="{{ item.seo_title_en or '' }}" placeholder="SEO title EN">
+    </div>
+    <div class="two">
+      <textarea name="seo_description_ar" maxlength="320" placeholder="SEO description AR">{{ item.seo_description_ar or '' }}</textarea>
+      <textarea name="seo_description_en" maxlength="320" placeholder="SEO description EN">{{ item.seo_description_en or '' }}</textarea>
+    </div>
+    <div class="two">
+      <input name="og_image" maxlength="255" value="{{ item.og_image or '' }}" placeholder="Open Graph image path">
+      <input name="canonical_url" maxlength="255" value="{{ item.canonical_url or '' }}" placeholder="Canonical URL optional">
+    </div>
+  </details>
+
+  <div class="editor-grid">
+    <label>
+      <span>ملخص عربي</span>
+      <textarea class="html-editor editor-rtl" name="excerpt_ar">{{ item.excerpt_ar or '' }}</textarea>
+    </label>
+    <label>
+      <span>English excerpt</span>
+      <textarea class="html-editor editor-ltr" name="excerpt_en">{{ item.excerpt_en or '' }}</textarea>
+    </label>
+  </div>
+
+  <div class="editor-grid">
+    <label>
+      <span>المحتوى العربي</span>
+      <textarea class="html-editor editor-rtl editor-large" name="content_ar">{{ item.content_ar or '' }}</textarea>
+    </label>
+    <label>
+      <span>English content</span>
+      <textarea class="html-editor editor-ltr editor-large" name="content_en">{{ item.content_en or '' }}</textarea>
+    </label>
+  </div>
+
+  <div class="media-insert-box">
+    <div>
+      <strong>{{ 'صورة المقال' if lang == 'ar' else 'Article image' }}</strong>
+      <p>{{ 'أدرج صورة من جهازك، أو اترك الصورة الحالية كما هي.' if lang == 'ar' else 'Upload an image from your device, or keep the current image.' }}</p>
+      <input type="file" name="image_file" accept="image/png,image/jpeg,image/gif,image/webp" data-preview-target="article-image-preview">
+      <input type="hidden" name="image" value="{{ item.image or '' }}">
+    </div>
+    <div class="image-preview-card">
+      {% if item.image %}
+        <img id="article-image-preview" src="{{ url_for('static', filename=item.image) }}" alt="preview">
+      {% else %}
+        <img id="article-image-preview" src="" alt="preview" style="display:none">
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="two">
+    <select name="category_id">
+      <option value="">{{ 'اختر القسم' if lang == 'ar' else 'Select category' }}</option>
+      {% for c in categories %}
+        <option value="{{c.id}}" {% if item.category_id == c.id %}selected{% endif %}>{{ c.name(lang) }}</option>
+      {% endfor %}
+    </select>
+
+    <div class="tag-picker">
+      <strong>{{ 'الكلمات المفتاحية' if lang == 'ar' else 'Tags' }}</strong>
+      <div class="tag-picker-grid">
+        {% for tag in tags %}
+          <label>
+            <input type="checkbox" name="tag_ids" value="{{ tag.id }}" {% if tag in item.tags %}checked{% endif %}>
+            <span>{{ tag.name }}</span>
+          </label>
+        {% endfor %}
+      </div>
+      <a class="small-admin-link" href="{{ url_for('admin.coding', lang=lang) }}">{{ 'إدارة الترميز' if lang == 'ar' else 'Manage coding' }}</a>
+    </div>
+  </div>
+
+  <label class="check">
+    <input type="checkbox" name="is_featured" {% if item.is_featured %}checked{% endif %}> {{ 'مميز' if lang == 'ar' else 'Featured' }}
+  </label>
+
+  <label class="check">
+    <input type="checkbox" name="is_published" {% if item.is_published or item.id is none %}checked{% endif %}> {{ t.published }}
+  </label>
+
+  <button class="btn">{{ t.save }}</button>
+</form>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.editorUploadUrl = "{{ url_for('admin.upload_image', lang=lang) }}";
+</script>
+<script src="{{ url_for('static', filename='js/editor.js') }}"></script>
+{% endblock %}

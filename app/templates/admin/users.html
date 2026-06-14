@@ -1,0 +1,43 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+<div class="admin-head"><div><span class="section-kicker">{{ 'الصلاحيات والأدوار' if lang == 'ar' else 'Roles and permissions' }}</span><h1>{{ 'المستخدمون' if lang == 'ar' else 'Users' }}</h1></div></div>
+
+<form method="post" action="{{ url_for('admin.create_user', lang=lang) }}" class="form-card admin-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+  <h2>{{ 'إضافة مستخدم' if lang == 'ar' else 'Add user' }}</h2>
+  <div class="two">
+    <input name="username" required maxlength="80" placeholder="{{ t.username }}">
+    <input type="email" name="email" required maxlength="160" placeholder="Email">
+  </div>
+  <div class="two">
+    <input type="password" name="password" required placeholder="{{ t.password }}">
+    <select name="role">{% for role in roles %}<option value="{{ role }}">{{ role }}</option>{% endfor %}</select>
+  </div>
+  <label class="check"><input type="checkbox" name="is_active" checked> {{ 'نشط' if lang == 'ar' else 'Active' }}</label>
+  <button class="btn">{{ t.save }}</button>
+</form>
+
+<div class="table-card">
+<table data-table>
+  <tr><th>{{ t.username }}</th><th>Email</th><th>{{ 'الدور' if lang == 'ar' else 'Role' }}</th><th>{{ 'نشط' if lang == 'ar' else 'Active' }}</th><th>{{ 'آخر دخول' if lang == 'ar' else 'Last login' }}</th><th>{{ t.actions }}</th></tr>
+  {% for item in items %}
+  <tr>
+    <td>{{ item.username }}</td>
+    <td>{{ item.email }}</td>
+    <td>{{ item.role }}</td>
+    <td>{{ 'نعم' if item.is_active and lang == 'ar' else ('لا' if lang == 'ar' else ('Yes' if item.is_active else 'No')) }}</td>
+    <td>{{ item.last_login_at.strftime('%Y-%m-%d %H:%M') if item.last_login_at else '-' }}</td>
+    <td>
+      <form method="post" action="{{ url_for('admin.update_user_role', lang=lang, item_id=item.id) }}" class="inline-edit-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <select name="role">
+          {% for role in roles %}<option value="{{ role }}" {% if item.role == role %}selected{% endif %}>{{ role }}</option>{% endfor %}
+        </select>
+        <label class="check"><input type="checkbox" name="is_active" {% if item.is_active %}checked{% endif %}> {{ 'نشط' if lang == 'ar' else 'Active' }}</label>
+        <input type="password" name="new_password" placeholder="{{ 'كلمة مرور جديدة اختيارية' if lang == 'ar' else 'Optional new password' }}">
+        <button class="btn mini">{{ t.save }}</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+</div>
+{% endblock %}

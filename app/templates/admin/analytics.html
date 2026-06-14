@@ -1,0 +1,74 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+<div class="admin-head">
+  <div>
+    <span class="section-kicker">{{ 'إحصائيات داخلية' if lang == 'ar' else 'Internal analytics' }}</span>
+    <h1>{{ 'زوار الموقع' if lang == 'ar' else 'Website visitors' }}</h1>
+    <p class="hint">{{ 'يتم حساب الزوار بدون حفظ عنوان IP الصريح، مع استثناء لوحة التحكم والملفات الثابتة.' if lang == 'ar' else 'Visitors are counted without storing raw IP addresses; admin and static assets are excluded.' }}</p>
+  </div>
+  <form class="admin-inline-form" method="get">
+    <label class="hint" for="days">{{ 'الفترة' if lang == 'ar' else 'Period' }}</label>
+    <select id="days" name="days" onchange="this.form.submit()">
+      {% for option in [7, 14, 30, 90, 365] %}
+      <option value="{{ option }}" {% if days == option %}selected{% endif %}>{{ option }} {{ 'يوم' if lang == 'ar' else 'days' }}</option>
+      {% endfor %}
+    </select>
+  </form>
+</div>
+
+<div class="stats analytics-stats">
+  <div><span class="stat-icon">👁</span><strong>{{ report.snapshot.today_unique_visitors }}</strong><span>{{ 'زوار اليوم' if lang == 'ar' else 'Visitors today' }}</span></div>
+  <div><span class="stat-icon">📄</span><strong>{{ report.snapshot.today_views }}</strong><span>{{ 'زيارات اليوم' if lang == 'ar' else 'Views today' }}</span></div>
+  <div><span class="stat-icon">👥</span><strong>{{ report.snapshot.month_unique_visitors }}</strong><span>{{ 'زوار هذا الشهر' if lang == 'ar' else 'Visitors this month' }}</span></div>
+  <div><span class="stat-icon">📊</span><strong>{{ report.snapshot.month_views }}</strong><span>{{ 'زيارات هذا الشهر' if lang == 'ar' else 'Views this month' }}</span></div>
+  <div><span class="stat-icon">🌐</span><strong>{{ report.snapshot.total_unique_visitors }}</strong><span>{{ 'إجمالي الزوار' if lang == 'ar' else 'Total visitors' }}</span></div>
+  <div><span class="stat-icon">🧾</span><strong>{{ report.snapshot.total_views }}</strong><span>{{ 'إجمالي الزيارات' if lang == 'ar' else 'Total views' }}</span></div>
+</div>
+
+<div class="table-card analytics-card">
+  <div class="admin-card-title">
+    <div><span class="section-kicker">{{ 'آخر' if lang == 'ar' else 'Last' }} {{ days }} {{ 'يوم' if lang == 'ar' else 'days' }}</span><h2>{{ 'الزيارات حسب اليوم' if lang == 'ar' else 'Daily views' }}</h2></div>
+  </div>
+  <div class="analytics-bars" aria-label="{{ 'مخطط الزيارات اليومية' if lang == 'ar' else 'Daily views chart' }}">
+    {% for day in report.daily %}
+    <div class="analytics-bar-item" title="{{ day.date }}: {{ day.views }} {{ 'زيارة' if lang == 'ar' else 'views' }}">
+      <span class="analytics-bar" style="--h: {{ day.height }}%;"></span>
+      <small>{{ day.label }}</small>
+      <em>{{ day.views }}</em>
+    </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="analytics-grid">
+  <div class="table-card">
+    <div class="admin-card-title"><h2>{{ 'أكثر الصفحات زيارة' if lang == 'ar' else 'Top pages' }}</h2></div>
+    <table>
+      <tr><th>{{ 'الصفحة' if lang == 'ar' else 'Page' }}</th><th>{{ 'النوع' if lang == 'ar' else 'Type' }}</th><th>{{ 'الزيارات' if lang == 'ar' else 'Views' }}</th><th>{{ 'الزوار' if lang == 'ar' else 'Visitors' }}</th></tr>
+      {% for item in report.top_pages %}
+      <tr><td><a href="{{ item.path }}" target="_blank" rel="noopener">{{ item.title }}</a><br><small class="hint">{{ item.path }}</small></td><td>{{ item.page_type }}</td><td>{{ item.views }}</td><td>{{ item.visitors }}</td></tr>
+      {% else %}<tr><td colspan="4" class="hint">{{ 'لا توجد بيانات بعد' if lang == 'ar' else 'No data yet' }}</td></tr>{% endfor %}
+    </table>
+  </div>
+
+  <div class="table-card">
+    <div class="admin-card-title"><h2>{{ 'مصادر الزيارة' if lang == 'ar' else 'Referrers' }}</h2></div>
+    <table>
+      <tr><th>{{ 'المصدر' if lang == 'ar' else 'Source' }}</th><th>{{ 'الزيارات' if lang == 'ar' else 'Views' }}</th></tr>
+      {% for item in report.top_referrers %}
+      <tr><td>{{ 'مباشر' if lang == 'ar' and item.source == 'Direct' else item.source }}</td><td>{{ item.views }}</td></tr>
+      {% else %}<tr><td colspan="2" class="hint">{{ 'لا توجد بيانات بعد' if lang == 'ar' else 'No data yet' }}</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="admin-card-title"><h2>{{ 'آخر الزيارات' if lang == 'ar' else 'Recent visits' }}</h2></div>
+  <table>
+    <tr><th>{{ 'الوقت' if lang == 'ar' else 'Time' }}</th><th>{{ 'الصفحة' if lang == 'ar' else 'Page' }}</th><th>{{ 'اللغة' if lang == 'ar' else 'Lang' }}</th><th>{{ 'المصدر' if lang == 'ar' else 'Referrer' }}</th></tr>
+    {% for view in report.recent_views %}
+    <tr><td>{{ view.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ view.display_title() }}<br><small class="hint">{{ view.path }}</small></td><td>{{ view.language or '-' }}</td><td>{{ view.referrer or ('مباشر' if lang == 'ar' else 'Direct') }}</td></tr>
+    {% else %}<tr><td colspan="4" class="hint">{{ 'لا توجد زيارات مسجلة بعد' if lang == 'ar' else 'No visits recorded yet' }}</td></tr>{% endfor %}
+  </table>
+</div>
+{% endblock %}

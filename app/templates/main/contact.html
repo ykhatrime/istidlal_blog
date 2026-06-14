@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block content %}
+<section class="form-page contact-layout reveal">
+  <div class="contact-info"><span class="section-kicker">{{ 'تواصل معي' if lang == 'ar' else 'Get in touch' }}</span><h1>{{ t.contact }}</h1><p>{{ 'يسعدني استقبال الاستفسارات أو فرص التعاون في مجال البيانات والتحول الرقمي.' if lang == 'ar' else 'I welcome questions and collaboration opportunities in data and digital transformation.' }}</p><div class="contact-chip">info@istidlal.net</div></div>
+  <form method="post" class="form-card glass-card"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input name="name" required placeholder="{{ t.name }}"><input type="email" name="email" required placeholder="{{ t.email_placeholder }}"><input name="subject" placeholder="{{ t.subject }}"><textarea name="message" required placeholder="{{ t.message }}"></textarea><button class="btn">{{ t.send }}</button></form>
+</section>
+{% endblock %}

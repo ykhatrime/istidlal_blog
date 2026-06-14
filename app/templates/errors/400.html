@@ -1,0 +1,5 @@
+{% extends 'base.html' %}
+{% block title %}400{% endblock %}
+{% block content %}
+<section class="empty-state reveal"><div>⚠️</div><h1>{{ 'انتهت صلاحية النموذج أو الطلب غير صحيح' if lang == 'ar' else 'The form expired or the request is invalid' }}</h1><p>{{ 'ارجع للصفحة السابقة وحاول مرة أخرى.' if lang == 'ar' else 'Go back and try again.' }}</p><a class="btn" href="{{ url_for('main.home', lang=lang) }}">{{ t.home }}</a></section>
+{% endblock %}

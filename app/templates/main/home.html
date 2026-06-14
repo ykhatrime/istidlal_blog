@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}{{ t.site_name }} | {{ t.tagline }}{% endblock %}
+{% block content %}
+<section class="hero professional-hero reveal">
+  <div class="hero-text">
+    <span class="eyebrow">{{'مدونة شخصية متخصصة في كل ما يتعلق بالبيانات والذكاء الاصطناعي' if lang == 'ar' else 'Personal data & digital transformation blog' }}</span>
+    <h1>{{ t.welcome }}</h1>
+    <h2>{{ t.hero_subtitle }}</h2>
+    <p>{{ t.hero_desc }}</p>
+    <form class="hero-search" action="{{ url_for('main.explore', lang=lang) }}" method="get" role="search">
+      <input type="search" name="q" placeholder="{{ 'ابحث عن Power BI، Python، مستودع بيانات...' if lang == 'ar' else 'Search Power BI, Python, data warehouse...' }}" aria-label="{{ t.search }}">
+      <button class="btn" type="submit">{{ t.search }}</button>
+    </form>
+    <div class="hero-buttons">
+      <a class="btn" href="{{ url_for('main.articles', lang=lang) }}">{{ t.browse_articles }}</a>
+      <a class="btn ghost" href="{{ url_for('main.projects', lang=lang) }}">{{ t.view_projects }}</a>
+      <a class="btn ghost dark-ghost" href="{{ url_for('main.services', lang=lang) }}">{{ t.services }}</a>
+    </div>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <div class="data-orbit one"></div><div class="data-orbit two"></div>
+    <div class="dashboard-visual glass" data-tilt-card>
+      <div class="dashboard-header">
+        <div class="window-dots"><span></span><span></span><span></span></div>
+        <div class="dashboard-live"><i></i>{{ 'مباشر' if lang == 'ar' else 'Live' }}</div>
+      </div>
+      <div class="dashboard-kpis">
+        <div class="kpi-tile"><small>{{ 'المشروعات المنشورة' if lang == 'ar' else 'Published projects' }}</small><strong data-count="{{ projects_count }}">0</strong></div>
+        <div class="kpi-tile"><small>{{ 'المقالات المنشورة' if lang == 'ar' else 'Published articles' }}</small><strong data-count="{{ articles_count }}">0</strong></div>
+      </div>
+      <div class="dashboard-grid-charts">
+        <div class="mini-chart horizontal-chart"><span style="--w:72%"></span><span style="--w:48%"></span><span style="--w:86%"></span><span style="--w:62%"></span></div>
+        <div class="mini-chart area-chart"><svg viewBox="0 0 220 120" preserveAspectRatio="none"><defs><linearGradient id="areaGlow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#67e8f9" stop-opacity=".82"/><stop offset="1" stop-color="#2563eb" stop-opacity=".15"/></linearGradient></defs><path class="area-fill" d="M0,95 L35,72 L70,82 L105,35 L140,64 L175,42 L220,22 L220,120 L0,120 Z"></path><path class="area-line" d="M0,95 L35,72 L70,82 L105,35 L140,64 L175,42 L220,22"></path></svg></div>
+        <div class="mini-chart bars-chart"><span style="--h:42%"></span><span style="--h:68%"></span><span style="--h:55%"></span><span style="--h:82%"></span><span style="--h:61%"></span><span style="--h:92%"></span><span style="--h:74%"></span></div>
+        <div class="mini-chart line-chart-svg"><svg viewBox="0 0 220 120" preserveAspectRatio="none"><path class="grid-line" d="M0,25 H220 M0,60 H220 M0,95 H220"></path><path class="thin-line one" d="M0,98 L28,84 L56,92 L84,58 L112,72 L140,48 L168,55 L196,28 L220,16"></path><path class="thin-line two" d="M0,75 L28,78 L56,62 L84,68 L112,40 L140,48 L168,26 L196,36 L220,18"></path></svg></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="feature-strip reveal" aria-label="{{ 'المجالات الرئيسية' if lang == 'ar' else 'Main areas' }}">
+  <a href="{{ url_for('main.explore', lang=lang, tag='power-bi') }}"><strong>BI</strong><span>Power BI</span></a>
+  <a href="{{ url_for('main.explore', lang=lang, tag='sql') }}"><strong>SQL</strong><span>Databases</span></a>
+  <a href="{{ url_for('main.explore', lang=lang, tag='python') }}"><strong>AI</strong><span>Python / AI</span></a>
+  <a href="{{ url_for('main.explore', lang=lang, tag='etl') }}"><strong>ETL</strong><span>Data Pipelines</span></a>
+</section>
+
+<section class="layout">
+  <div class="content-col">
+    <div class="section-title reveal"><div><span class="section-kicker">{{ 'جديد المدونة' if lang == 'ar' else 'Fresh from the blog' }}</span><h2>{{ t.latest_articles }}</h2></div><a href="{{ url_for('main.articles', lang=lang) }}">{{ t.view_all }}</a></div>
+    <div class="grid interactive-grid">{% for article in articles %}{% include 'main/partials_article_card.html' %}{% else %}<div class="empty-state"><div>📝</div><h3>{{ 'لا توجد مقالات منشورة بعد' if lang == 'ar' else 'No published articles yet' }}</h3></div>{% endfor %}</div>
+    <div class="section-title reveal"><div><span class="section-kicker">{{ 'نماذج عملية' if lang == 'ar' else 'Selected work' }}</span><h2>{{ t.latest_projects }}</h2></div><a href="{{ url_for('main.projects', lang=lang) }}">{{ t.view_all }}</a></div>
+    <div class="grid interactive-grid">{% for project in projects %}{% include 'main/partials_project_card.html' %}{% else %}<div class="empty-state"><div>🧩</div><h3>{{ 'لا توجد مشروعات منشورة بعد' if lang == 'ar' else 'No published projects yet' }}</h3></div>{% endfor %}</div>
+  </div>
+  <aside class="sidebar reveal">
+    <div class="profile-card"><div class="avatar" aria-hidden="true">👨🏻‍💻</div><h3>{{ t.about_me }}</h3><p>{{ t.about_me_desc }}</p><a class="btn small full" href="{{ url_for('main.about', lang=lang) }}">{{ t.about }}</a></div>
+    <div class="side-card"><h3>{{ t.categories }}</h3>{% for c in categories %}<a class="side-link clickable-side-link" href="{{ url_for('main.explore', lang=lang, category=c.slug) }}"><span>{{ c.name(lang) }}</span> <b>{{ category_counts.get(c.id, 0) }}</b></a>{% endfor %}</div>
+    <div class="side-card"><h3>{{ t.keywords }}</h3><div class="tags clickable-tags">{% for tag in tags %}<a href="{{ url_for('main.explore', lang=lang, tag=tag.slug) }}">{{ tag.name }}{% if tag_counts.get(tag.id, 0) %}<em>{{ tag_counts.get(tag.id, 0) }}</em>{% endif %}</a>{% endfor %}</div></div>
+  </aside>
+</section>
+{% include 'main/newsletter_block.html' %}
+{% endblock %}

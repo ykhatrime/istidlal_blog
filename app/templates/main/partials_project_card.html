@@ -1,0 +1,17 @@
+<article class="card reveal project-card" data-title="{{ project.title(lang)|lower }} {{ project.excerpt(lang)|striptags|lower }} {{ project.technologies|lower }} {{ project.category.name(lang)|lower if project.category else '' }} {% for tag in project.tags %}{{ tag.name|lower }} {% endfor %}">
+  <a class="thumb media-thumb" href="{{ url_for('main.project_detail', lang=lang, slug=project.slug) }}" aria-label="{{ project.title(lang) }}">
+    {% if project.image %}
+      <img src="{{ asset_url(project.image) }}" alt="{{ project.title(lang) }}" loading="lazy" decoding="async">
+    {% else %}
+      <span aria-hidden="true">🧩</span><div class="thumb-glow"></div>
+    {% endif %}
+    {% if project.is_featured %}<em class="featured-badge">{{ 'مميز' if lang == 'ar' else 'Featured' }}</em>{% endif %}
+  </a>
+  <div class="card-body">
+    {% if project.category %}<a class="badge-soft" href="{{ url_for('main.explore', lang=lang, category=project.category.slug) }}">{{ project.category.name(lang) }}</a>{% endif %}
+    <h3><a href="{{ url_for('main.project_detail', lang=lang, slug=project.slug) }}">{{ project.title(lang) }}</a></h3>
+    <div class="card-excerpt">{{ project.excerpt(lang)|safe }}</div>
+    <div class="tags">{% for tech in project.tech_list()[:4] %}<span>{{ tech }}</span>{% endfor %}{% for tag in project.tags[:3] %}<a href="{{ url_for('main.explore', lang=lang, tag=tag.slug) }}">{{ tag.name }}</a>{% endfor %}</div>
+    <a class="card-link" href="{{ url_for('main.project_detail', lang=lang, slug=project.slug) }}">{{ t.view_project }} <span>{{ '←' if lang == 'ar' else '→' }}</span></a>
+  </div>
+</article>

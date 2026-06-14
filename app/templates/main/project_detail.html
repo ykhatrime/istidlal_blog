@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{{ project.seo_title(lang) }} | {{ t.site_name }}{% endblock %}
+{% block meta_description %}{{ project.seo_description(lang)|striptags|truncate(160) }}{% endblock %}
+{% block canonical_url %}{{ project.canonical_url or request.base_url }}{% endblock %}
+{% block og_title %}{{ project.seo_title(lang) }}{% endblock %}
+{% block og_description %}{{ project.seo_description(lang)|striptags|truncate(160) }}{% endblock %}
+{% block og_image %}{% if project.open_graph_image() %}<meta property="og:image" content="{{ asset_url(project.open_graph_image(), external=True) }}"><meta name="twitter:image" content="{{ asset_url(project.open_graph_image(), external=True) }}">{% endif %}{% endblock %}
+{% block content %}
+<article class="detail reveal project-detail">
+  <nav class="breadcrumbs" aria-label="breadcrumb"><a href="{{ url_for('main.home', lang=lang) }}">{{ t.home }}</a><span>/</span><a href="{{ url_for('main.projects', lang=lang) }}">{{ t.projects }}</a></nav>
+  <div class="detail-meta"><span class="badge-soft">{{ project.category.name(lang) if project.category else ('مشروع' if lang == 'ar' else 'Project') }}</span><time datetime="{{ project.created_at.isoformat() }}">{{ project.created_at.strftime('%Y-%m-%d') }}</time>{% if project.is_featured %}<span>⭐ {{ 'مميز' if lang == 'ar' else 'Featured' }}</span>{% endif %}</div>
+  <h1>{{ project.title(lang) }}</h1>
+  <div class="lead">{{ project.excerpt(lang)|safe }}</div>
+  {% if project.image %}<figure class="detail-cover"><img src="{{ asset_url(project.image) }}" alt="{{ project.title(lang) }}" loading="eager" decoding="async"></figure>{% endif %}
+  <div class="tags detail-tags">{% for tech in project.tech_list() %}<span>{{ tech }}</span>{% endfor %}{% for tag in project.tags %}<a href="{{ url_for('main.explore', lang=lang, tag=tag.slug) }}">#{{ tag.name }}</a>{% endfor %}</div>
+  <div class="content-text">{{ project.description(lang)|safe }}</div>
+  <div class="hero-buttons detail-actions">{% if project.demo_url %}<a class="btn" href="{{ project.demo_url }}" target="_blank" rel="noopener noreferrer">Demo</a>{% endif %}{% if project.repo_url %}<a class="btn ghost dark-ghost" href="{{ project.repo_url }}" target="_blank" rel="noopener noreferrer">Repository</a>{% endif %}</div>
+</article>
+{% set action_url = url_for('main.project_comment', lang=lang, slug=project.slug) %}
+{% include 'main/private_comment_form.html' %}
+{% if related %}<section class="related"><div class="section-title"><h2>{{ 'مشاريع ذات صلة' if lang == 'ar' else 'Related projects' }}</h2></div><div class="grid">{% for project in related %}{% include 'main/partials_project_card.html' %}{% endfor %}</div></section>{% endif %}
+{% endblock %}

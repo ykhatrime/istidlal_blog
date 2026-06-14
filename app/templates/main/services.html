@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% block title %}{{ t.services }} | {{ t.site_name }}{% endblock %}
+{% block meta_description %}{{ 'خدمات احترافية في تحليل البيانات، لوحات المعلومات، مستودعات البيانات، التكاملات، الذكاء الاصطناعي، وحوكمة البيانات.' if lang == 'ar' else 'Professional services in data analytics, dashboards, data warehousing, integrations, AI solutions, and data governance.' }}{% endblock %}
+{% block meta_keywords %}{{ 'خدمات البيانات, Power BI, مستودع البيانات, ذكاء اصطناعي, Flask, API, حوكمة البيانات' if lang == 'ar' else 'data services, Power BI, data warehouse, AI, Flask, API, data governance' }}{% endblock %}
+{% block content %}
+<section class="services-hero reveal">
+  <div>
+    <span class="eyebrow">{{ 'خدمات أقدمها' if lang == 'ar' else 'Services I offer' }}</span>
+    <h1>{{ t.services }}</h1>
+    <p>
+      {{ 'أقدم حلولًا عملية تجمع بين فهم الأعمال، هندسة البيانات، لوحات المؤشرات، والتقنيات الحديثة لمساعدة المؤسسات والأفراد على تحويل البيانات إلى قيمة قابلة للتنفيذ.' if lang == 'ar' else 'I provide practical solutions that combine business understanding, data engineering, dashboards, and modern technologies to turn data into actionable value.' }}
+    </p>
+    <div class="hero-buttons">
+      <a class="btn" href="{{ url_for('main.contact', lang=lang) }}">{{ 'اطلب استشارة' if lang == 'ar' else 'Request a consultation' }}</a>
+      <a class="btn ghost" href="{{ url_for('main.projects', lang=lang) }}">{{ t.view_projects }}</a>
+    </div>
+  </div>
+  <div class="services-hero-panel glass" aria-hidden="true">
+    <div class="service-metric"><strong>BI</strong><span>Dashboards</span></div>
+    <div class="service-metric"><strong>DW</strong><span>Data Warehouse</span></div>
+    <div class="service-metric"><strong>AI</strong><span>Automation</span></div>
+    <div class="service-metric"><strong>API</strong><span>Integration</span></div>
+  </div>
+</section>
+
+<section class="services-page-section reveal">
+  <div class="section-title">
+    <div>
+      <span class="section-kicker">{{ 'مجالات الخدمة' if lang == 'ar' else 'Service areas' }}</span>
+      <h2>{{ 'كيف يمكنني مساعدتك؟' if lang == 'ar' else 'How I can help' }}</h2>
+    </div>
+  </div>
+  <div class="services-grid">
+    {% for service in offerings %}
+      <article class="service-card glass-card">
+        <div class="service-icon" aria-hidden="true">{{ service.icon }}</div>
+        <h3>{{ service.title }}</h3>
+        <p>{{ service.summary }}</p>
+        <div class="service-outcomes">
+          <strong>{{ 'المخرجات المتوقعة' if lang == 'ar' else 'Expected outcomes' }}</strong>
+          <ul>
+            {% for outcome in service.outcomes %}<li>{{ outcome }}</li>{% endfor %}
+          </ul>
+        </div>
+        <div class="service-tools" aria-label="{{ 'الأدوات والتقنيات' if lang == 'ar' else 'Tools and technologies' }}">
+          {% for tool in service.tools %}<span>{{ tool }}</span>{% endfor %}
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="services-page-section reveal">
+  <div class="section-title">
+    <div>
+      <span class="section-kicker">{{ 'منهجية العمل' if lang == 'ar' else 'Working method' }}</span>
+      <h2>{{ 'طريقة تنفيذ واضحة وقابلة للمتابعة' if lang == 'ar' else 'A clear and trackable delivery approach' }}</h2>
+    </div>
+  </div>
+  <div class="service-process">
+    {% for step in process_steps %}
+      <div class="process-step glass-card">
+        <span>{{ step.number }}</span>
+        <h3>{{ step.title }}</h3>
+        <p>{{ step.description }}</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="services-cta reveal">
+  <div>
+    <span class="section-kicker">{{ 'ابدأ بخطوة بسيطة' if lang == 'ar' else 'Start with a simple step' }}</span>
+    <h2>{{ 'هل لديك فكرة، تحدي بيانات، أو مشروع يحتاج ترتيبًا؟' if lang == 'ar' else 'Do you have an idea, data challenge, or project that needs structure?' }}</h2>
+    <p>{{ 'أرسل لي وصفًا مختصرًا، وسأساعدك في تحويله إلى خطة عملية أو نموذج أولي واضح.' if lang == 'ar' else 'Send a brief description, and I will help turn it into a practical plan or a clear prototype.' }}</p>
+  </div>
+  <a class="btn" href="{{ url_for('main.contact', lang=lang) }}">{{ t.contact }}</a>
+</section>
+{% endblock %}

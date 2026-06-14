@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ 'rtl' if is_rtl else 'ltr' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0f3f88">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="{% block meta_description %}{{ t.hero_desc|striptags }}{% endblock %}">
+  <meta name="keywords" content="{% block meta_keywords %}Data, BI, Power BI, SQL, Python, Flask, Dashboard, تحليل البيانات, ذكاء الأعمال{% endblock %}">
+  <meta property="og:site_name" content="{{ t.site_name }}">
+  <meta property="og:type" content="{% block og_type %}website{% endblock %}">
+  <meta property="og:title" content="{% block og_title %}{% block title %}{{ t.site_name }}{% endblock %}{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}{{ t.hero_desc|striptags }}{% endblock %}">
+  <meta property="og:url" content="{% block canonical_url %}{{ request.base_url }}{% endblock %}">
+  {% block og_image %}{% endblock %}
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="canonical" href="{{ self.canonical_url() }}">
+  <title>{% block page_title %}{{ self.title() }}{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body>
+  <a class="skip-link" href="#main-content">{{ 'تجاوز إلى المحتوى' if lang == 'ar' else 'Skip to content' }}</a>
+  <div class="page-loader" aria-hidden="true"><span></span></div>
+  {% include 'includes/navbar.html' %}
+  <main id="main-content" tabindex="-1">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}<div class="flash-wrap" aria-live="polite">{% for cat,msg in messages %}<div class="flash {{ cat }}" role="alert">{{ msg }}</div>{% endfor %}</div>{% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+  {% include 'includes/footer.html' %}
+  <button class="back-to-top" type="button" aria-label="{{ 'الرجوع للأعلى' if lang == 'ar' else 'Back to top' }}">↑</button>
+  <script>window.csrfToken = "{{ csrf_token() }}";</script>
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,25 @@
+{% extends 'admin_base.html' %}{% block content %}
+<div class="admin-head"><div><span class="section-kicker">{{ 'نظرة عامة' if lang == 'ar' else 'Overview' }}</span><h1>{{ t.dashboard }}</h1></div></div>
+<div class="stats">
+  <div><span class="stat-icon">📝</span><strong>{{ stats.articles }}</strong><span>{{ t.articles }}</span></div>
+  <div><span class="stat-icon">🧩</span><strong>{{ stats.projects }}</strong><span>{{ t.projects }}</span></div>
+  <div><span class="stat-icon">🗨</span><strong>{{ stats.comments }}</strong><span>{{ t.comments }}{% if stats.unread_comments %} · {{ stats.unread_comments }} {{ 'غير مقروء' if lang == 'ar' else 'unread' }}{% endif %}</span></div>
+  <div><span class="stat-icon">✉</span><strong>{{ stats.subscribers }}</strong><span>{{ t.newsletter }}</span></div>
+  <div><span class="stat-icon">💬</span><strong>{{ stats.messages }}</strong><span>{{ t.messages }}</span></div>
+  <div><span class="stat-icon">👁</span><strong>{{ stats.today_unique_visitors }}</strong><span>{{ 'زوار اليوم' if lang == 'ar' else 'Visitors today' }}</span></div>
+  <div><span class="stat-icon">📊</span><strong>{{ stats.month_views }}</strong><span>{{ 'زيارات هذا الشهر' if lang == 'ar' else 'Views this month' }}</span></div>
+</div>
+<div class="analytics-shortcut">
+  <a class="btn small" href="{{ url_for('admin.analytics', lang=lang) }}">{{ 'فتح إحصائيات الزوار' if lang == 'ar' else 'Open visitor analytics' }}</a>
+  <span class="hint">{{ 'إجمالي الزيارات:' if lang == 'ar' else 'Total views:' }} {{ stats.total_views }} · {{ 'إجمالي الزوار:' if lang == 'ar' else 'Total visitors:' }} {{ stats.total_unique_visitors }}</span>
+</div>
+
+<div class="admin-head compact-head">
+  <div><span class="section-kicker">{{ 'آخر التعليقات الخاصة' if lang == 'ar' else 'Latest private comments' }}</span><h2>{{ t.comments }}</h2></div>
+  <a class="btn small" href="{{ url_for('admin.comments', lang=lang) }}">{{ 'استعراض التعليقات' if lang == 'ar' else 'Browse comments' }}</a>
+</div>
+<div class="table-card"><table><tr><th>{{ 'الحالة' if lang == 'ar' else 'Status' }}</th><th>{{ 'العنصر' if lang == 'ar' else 'Item' }}</th><th>{{ t.name }}</th><th>{{ t.comment }}</th><th>Date</th></tr>{% for c in latest_comments %}<tr><td><span class="status {{ 'draft' if not c.is_read else 'ok' }}">{{ 'غير مقروء' if (lang == 'ar' and not c.is_read) else ('مقروء' if lang == 'ar' else ('Unread' if not c.is_read else 'Read')) }}</span></td><td>{{ c.content_title(lang) }}</td><td>{{ c.name }}</td><td class="comment-cell">{{ c.comment }}</td><td>{{ c.created_at.strftime('%Y-%m-%d') }}</td></tr>{% else %}<tr><td colspan="5" class="hint">{{ 'لا توجد تعليقات بعد' if lang == 'ar' else 'No comments yet' }}</td></tr>{% endfor %}</table></div>
+
+<div class="admin-head compact-head"><div><span class="section-kicker">{{ 'آخر الرسائل' if lang == 'ar' else 'Latest messages' }}</span><h2>{{ t.messages }}</h2></div></div>
+<div class="table-card"><table><tr><th>{{ t.name }}</th><th>Email</th><th>{{ t.subject }}</th><th>Date</th></tr>{% for m in latest_messages %}<tr><td>{{m.name}}</td><td>{{m.email}}</td><td>{{m.subject}}</td><td>{{m.created_at.strftime('%Y-%m-%d')}}</td></tr>{% else %}<tr><td colspan="4" class="hint">{{ 'لا توجد رسائل بعد' if lang == 'ar' else 'No messages yet' }}</td></tr>{% endfor %}</table></div>
+{% endblock %}

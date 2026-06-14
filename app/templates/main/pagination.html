@@ -1,0 +1,25 @@
+{% if pagination and pagination.pages > 1 %}
+<nav class="pagination-wrap reveal" aria-label="Pagination">
+  {% set args = request.args.to_dict() %}
+  {% if pagination.has_prev %}
+    {% set _ = args.update({'page': pagination.prev_num}) %}
+    <a class="page-btn" href="{{ url_for(request.endpoint, lang=lang, **args) }}">{{ 'السابق' if lang == 'ar' else 'Previous' }}</a>
+  {% endif %}
+
+  {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+    {% if p %}
+      {% set args = request.args.to_dict() %}
+      {% set _ = args.update({'page': p}) %}
+      <a class="page-btn {{ 'active' if pagination.page == p else '' }}" href="{{ url_for(request.endpoint, lang=lang, **args) }}">{{ p }}</a>
+    {% else %}
+      <span class="page-dots">…</span>
+    {% endif %}
+  {% endfor %}
+
+  {% if pagination.has_next %}
+    {% set args = request.args.to_dict() %}
+    {% set _ = args.update({'page': pagination.next_num}) %}
+    <a class="page-btn" href="{{ url_for(request.endpoint, lang=lang, **args) }}">{{ 'التالي' if lang == 'ar' else 'Next' }}</a>
+  {% endif %}
+</nav>
+{% endif %}

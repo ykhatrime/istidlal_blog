@@ -1,0 +1,25 @@
+<header class="topbar" id="topbar">
+  <a class="brand" href="{{ url_for('main.home', lang=lang) }}" aria-label="{{ t.site_name }}">
+    <span class="logo" aria-hidden="true">▥</span>
+    <span><strong>{{ t.site_name }}</strong><small>{{ t.tagline }}</small></span>
+  </a>
+
+  <button class="mobile-menu-btn" type="button" aria-label="{{ 'فتح القائمة' if lang == 'ar' else 'Open menu' }}" aria-expanded="false" data-menu-toggle>☰</button>
+
+  <nav class="nav" data-nav aria-label="{{ 'القائمة الرئيسية' if lang == 'ar' else 'Main navigation' }}">
+    <a class="{{ 'active' if request.endpoint == 'main.home' else '' }}" href="{{ url_for('main.home', lang=lang) }}">{{ t.home }}</a>
+    <a class="{{ 'active' if request.endpoint in ['main.articles','main.article_detail'] else '' }}" href="{{ url_for('main.articles', lang=lang) }}">{{ t.articles }}</a>
+    <a class="{{ 'active' if request.endpoint in ['main.projects','main.project_detail'] else '' }}" href="{{ url_for('main.projects', lang=lang) }}">{{ t.projects }}</a>
+    <a class="{{ 'active' if request.endpoint == 'main.services' else '' }}" href="{{ url_for('main.services', lang=lang) }}">{{ t.services }}</a>
+    <a class="{{ 'active' if request.endpoint == 'main.explore' else '' }}" href="{{ url_for('main.explore', lang=lang) }}">{{ 'استكشف' if lang == 'ar' else 'Explore' }}</a>
+    <a class="{{ 'active' if request.endpoint == 'main.about' else '' }}" href="{{ url_for('main.about', lang=lang) }}">{{ t.about }}</a>
+    <a class="{{ 'active' if request.endpoint == 'main.contact' else '' }}" href="{{ url_for('main.contact', lang=lang) }}">{{ t.contact }}</a>
+  </nav>
+
+  <div class="nav-actions">
+    <a class="icon-btn" href="{{ url_for('main.explore', lang=lang) }}" aria-label="{{ 'البحث' if lang == 'ar' else 'Search' }}">⌕</a>
+    <button class="icon-btn" type="button" data-theme-toggle aria-label="{{ 'تبديل الوضع' if lang == 'ar' else 'Toggle theme' }}">☾</button>
+    <a class="lang" href="{{ switch_lang_url() }}" aria-label="{{ 'English' if lang == 'ar' else 'العربية' }}">{{ 'EN' if lang == 'ar' else 'AR' }}</a>
+    {% if session.get('user_id') %}<a class="btn small" href="{{ url_for('admin.dashboard', lang=lang) }}">{{ t.admin }}</a>{% else %}<a class="btn small" href="{{ url_for('auth.login', lang=lang) }}">{{ t.login }}</a>{% endif %}
+  </div>
+</header>

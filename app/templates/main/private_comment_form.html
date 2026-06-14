@@ -1,0 +1,18 @@
+<section id="private-comment" class="detail comment-box reveal">
+  <div class="section-title compact-title">
+    <div>
+      <span class="section-kicker">{{ 'تعليق خاص' if lang == 'ar' else 'Private comment' }}</span>
+      <h2>{{ 'شارك رأيك معي' if lang == 'ar' else 'Share your thoughts with me' }}</h2>
+    </div>
+  </div>
+  <p class="muted-text">{{ 'سيتم إرسال تعليقك لصاحب الموقع فقط، ولن يظهر للزوار في الصفحة.' if lang == 'ar' else 'Your comment will be sent only to the site owner and will not appear publicly on this page.' }}</p>
+  <form method="post" action="{{ action_url }}" class="comment-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <input type="text" name="website" tabindex="-1" autocomplete="off" class="hp-field" aria-hidden="true">
+    <div class="two">
+      <label>{{ t.name }}<input type="text" name="name" required maxlength="120" placeholder="{{ 'اسمك' if lang == 'ar' else 'Your name' }}"></label>
+      <label>Email<input type="email" name="email" maxlength="160" placeholder="{{ 'اختياري' if lang == 'ar' else 'Optional' }}"></label>
+    </div>
+    <label>{{ t.comment }}<textarea name="comment" required maxlength="3000" placeholder="{{ 'اكتب تعليقك أو ملاحظتك هنا...' if lang == 'ar' else 'Write your comment or feedback here...' }}"></textarea></label>
+    <button class="btn" type="submit">{{ 'إرسال التعليق' if lang == 'ar' else 'Send comment' }}</button>
+  </form>
+</section>

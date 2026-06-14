@@ -1,0 +1,129 @@
+{% extends 'admin_base.html' %}
+
+{% block content %}
+<div class="page-title-row">
+  <div>
+    <h1>{{ 'الترميز' if lang == 'ar' else 'Coding' }}</h1>
+    <p>{{ 'إدارة الأقسام والكلمات المفتاحية المستخدمة في المقالات والمشروعات.' if lang == 'ar' else 'Manage categories and tags used by articles and projects.' }}</p>
+  </div>
+</div>
+
+<div class="coding-layout">
+  <section class="form-card coding-card">
+    <h2>{{ 'إضافة قسم جديد' if lang == 'ar' else 'Add new category' }}</h2>
+    <form method="post" class="coding-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_type" value="category">
+      <input name="name_ar" placeholder="اسم القسم بالعربية" required>
+      <input name="name_en" placeholder="Category name in English" required>
+      <input name="slug" placeholder="category-slug" required>
+      <textarea name="description" placeholder="{{ 'وصف مختصر للقسم' if lang == 'ar' else 'Short description' }}"></textarea>
+      <label class="color-field">
+        <span>{{ 'لون القسم' if lang == 'ar' else 'Color' }}</span>
+        <input type="color" name="color" value="#2563eb">
+      </label>
+      <button class="btn" type="submit">{{ t.save }}</button>
+    </form>
+  </section>
+
+  <section class="form-card coding-card">
+    <h2>{{ 'إضافة كلمة مفتاحية' if lang == 'ar' else 'Add new tag' }}</h2>
+    <form method="post" class="coding-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="form_type" value="tag">
+      <input name="name" placeholder="Power BI" required>
+      <input name="slug" placeholder="power-bi" required>
+      <button class="btn" type="submit">{{ t.save }}</button>
+    </form>
+  </section>
+</div>
+
+<div class="coding-layout coding-tables">
+  <section class="form-card coding-card wide">
+    <div class="table-headline">
+      <h2>{{ 'الأقسام' if lang == 'ar' else 'Categories' }}</h2>
+      <span>{{ categories|length }}</span>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table coding-table">
+        <thead>
+          <tr>
+            <th>{{ 'القسم' if lang == 'ar' else 'Category' }}</th>
+            <th>Slug</th>
+            <th>{{ 'الاستخدام' if lang == 'ar' else 'Usage' }}</th>
+            <th>{{ 'تعديل سريع' if lang == 'ar' else 'Quick edit' }}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in categories %}
+          <tr>
+            <td><span class="category-dot" style="background:{{ c.color }}"></span>{{ c.name(lang) }}</td>
+            <td><code>{{ c.slug }}</code></td>
+            <td>{{ c.articles|length + c.projects|length }}</td>
+            <td>
+              <form method="post" class="inline-edit-form"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="form_type" value="category">
+                <input type="hidden" name="item_id" value="{{ c.id }}">
+                <input name="name_ar" value="{{ c.name_ar }}" required>
+                <input name="name_en" value="{{ c.name_en }}" required>
+                <input name="slug" value="{{ c.slug }}" required>
+                <input name="description" value="{{ c.description or '' }}">
+                <input type="color" name="color" value="{{ c.color or '#2563eb' }}">
+                <button class="mini-btn" type="submit">{{ 'حفظ' if lang == 'ar' else 'Save' }}</button>
+              </form>
+            </td>
+            <td>
+              <form method="post" action="{{ url_for('admin.delete_category', lang=lang, item_id=c.id) }}" onsubmit="return confirm('{{ 'تأكيد الحذف؟' if lang == 'ar' else 'Confirm delete?' }}')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="mini-btn danger" type="submit">{{ 'حذف' if lang == 'ar' else 'Delete' }}</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="form-card coding-card wide">
+    <div class="table-headline">
+      <h2>{{ 'الكلمات المفتاحية' if lang == 'ar' else 'Tags' }}</h2>
+      <span>{{ tags|length }}</span>
+    </div>
+    <div class="admin-table-wrap">
+      <table class="admin-table coding-table">
+        <thead>
+          <tr>
+            <th>{{ 'الكلمة' if lang == 'ar' else 'Tag' }}</th>
+            <th>Slug</th>
+            <th>{{ 'الاستخدام' if lang == 'ar' else 'Usage' }}</th>
+            <th>{{ 'تعديل سريع' if lang == 'ar' else 'Quick edit' }}</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for tag in tags %}
+          <tr>
+            <td><span class="tag-chip admin-tag-chip">{{ tag.name }}</span></td>
+            <td><code>{{ tag.slug }}</code></td>
+            <td>{{ tag.articles|length + tag.projects|length }}</td>
+            <td>
+              <form method="post" class="inline-edit-form tag-inline-edit"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="form_type" value="tag">
+                <input type="hidden" name="item_id" value="{{ tag.id }}">
+                <input name="name" value="{{ tag.name }}" required>
+                <input name="slug" value="{{ tag.slug }}" required>
+                <button class="mini-btn" type="submit">{{ 'حفظ' if lang == 'ar' else 'Save' }}</button>
+              </form>
+            </td>
+            <td>
+              <form method="post" action="{{ url_for('admin.delete_tag', lang=lang, item_id=tag.id) }}" onsubmit="return confirm('{{ 'تأكيد الحذف؟' if lang == 'ar' else 'Confirm delete?' }}')"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button class="mini-btn danger" type="submit">{{ 'حذف' if lang == 'ar' else 'Delete' }}</button>
+              </form>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+</div>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block title %}{{ article.seo_title(lang) }} | {{ t.site_name }}{% endblock %}
+{% block meta_description %}{{ article.seo_description(lang)|striptags|truncate(160) }}{% endblock %}
+{% block canonical_url %}{{ article.canonical_url or request.base_url }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block og_title %}{{ article.seo_title(lang) }}{% endblock %}
+{% block og_description %}{{ article.seo_description(lang)|striptags|truncate(160) }}{% endblock %}
+{% block og_image %}{% if article.open_graph_image() %}<meta property="og:image" content="{{ asset_url(article.open_graph_image(), external=True) }}"><meta name="twitter:image" content="{{ asset_url(article.open_graph_image(), external=True) }}">{% endif %}{% endblock %}
+{% block content %}
+<article class="detail reveal article-detail">
+  <nav class="breadcrumbs" aria-label="breadcrumb"><a href="{{ url_for('main.home', lang=lang) }}">{{ t.home }}</a><span>/</span><a href="{{ url_for('main.articles', lang=lang) }}">{{ t.articles }}</a></nav>
+  <div class="detail-meta"><span class="badge-soft">{{ article.category.name(lang) if article.category else 'Data' }}</span><time datetime="{{ article.created_at.isoformat() }}">{{ article.created_at.strftime('%Y-%m-%d') }}</time><span>{{ article.views }} 👁</span>{% if article.is_featured %}<span>⭐ {{ 'مميز' if lang == 'ar' else 'Featured' }}</span>{% endif %}</div>
+  <h1>{{ article.title(lang) }}</h1>
+  <div class="lead">{{ article.excerpt(lang)|safe }}</div>
+  {% if article.image %}<figure class="detail-cover"><img src="{{ asset_url(article.image) }}" alt="{{ article.title(lang) }}" loading="eager" decoding="async"></figure>{% endif %}
+  {% if article.tags %}<div class="tags detail-tags">{% for tag in article.tags %}<a href="{{ url_for('main.explore', lang=lang, tag=tag.slug) }}">#{{ tag.name }}</a>{% endfor %}</div>{% endif %}
+  <div class="content-text">{{ article.content(lang)|safe }}</div>
+</article>
+{% set action_url = url_for('main.article_comment', lang=lang, slug=article.slug) %}
+{% include 'main/private_comment_form.html' %}
+{% if related %}<section class="related"><div class="section-title"><h2>{{ 'مقالات ذات صلة' if lang == 'ar' else 'Related articles' }}</h2></div><div class="grid">{% for article in related %}{% include 'main/partials_article_card.html' %}{% endfor %}</div></section>{% endif %}
+{% endblock %}

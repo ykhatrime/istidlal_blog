@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% block content %}
+<section class="page-head reveal">
+  <div>
+    <span class="section-kicker">
+      {{ 'استكشاف المحتوى' if lang == 'ar' else 'Explore content' }}
+    </span>
+    <h1>
+      {% if selected_category %}
+        {{ selected_category.name(lang) }}
+      {% elif selected_tag %}
+        #{{ selected_tag.name }}
+      {% elif q %}
+        {{ 'نتائج البحث عن' if lang == 'ar' else 'Search results for' }}: {{ q }}
+      {% else %}
+        {{ 'كل المقالات والمشروعات' if lang == 'ar' else 'All articles and projects' }}
+      {% endif %}
+    </h1>
+    <p>
+      {{ 'تصفح المحتوى حسب الأقسام أو الكلمات المفتاحية للوصول بسرعة إلى المقالات والمشروعات المرتبطة.' if lang == 'ar' else 'Browse content by categories or tags to quickly find related articles and projects.' }}
+    </p>
+  </div>
+</section>
+
+<section class="explore-layout">
+  <main class="explore-main">
+    <section class="advanced-search-card explore-search reveal">
+      <form class="advanced-search-form" method="get" action="{{ url_for('main.explore', lang=lang) }}">
+        <input type="hidden" name="type" value="{{ content_type }}">
+        <div class="search-main-field">
+          <span class="search-icon">⌕</span>
+          <input name="q" value="{{ q }}" autocomplete="off" placeholder="{{ 'ابحث داخل المقالات والمشروعات...' if lang == 'ar' else 'Search articles and projects...' }}">
+        </div>
+        <div class="search-controls">
+          <select name="category">
+            <option value="">{{ 'كل الأقسام' if lang == 'ar' else 'All categories' }}</option>
+            {% for c in categories %}<option value="{{ c.slug }}" {{ 'selected' if selected_category and selected_category.id == c.id else '' }}>{{ c.name(lang) }}</option>{% endfor %}
+          </select>
+          <select name="tag">
+            <option value="">{{ 'كل الكلمات المفتاحية' if lang == 'ar' else 'All keywords' }}</option>
+            {% for tag in tags %}<option value="{{ tag.slug }}" {{ 'selected' if selected_tag and selected_tag.id == tag.id else '' }}>{{ tag.name }}</option>{% endfor %}
+          </select>
+          <select name="sort">
+            <option value="newest" {{ 'selected' if sort == 'newest' else '' }}>{{ 'الأحدث أولاً' if lang == 'ar' else 'Newest first' }}</option>
+            <option value="oldest" {{ 'selected' if sort == 'oldest' else '' }}>{{ 'الأقدم أولاً' if lang == 'ar' else 'Oldest first' }}</option>
+            <option value="title" {{ 'selected' if sort == 'title' else '' }}>{{ 'حسب العنوان' if lang == 'ar' else 'By title' }}</option>
+          </select>
+          <button class="btn" type="submit">{{ 'بحث' if lang == 'ar' else 'Search' }}</button>
+          {% if has_filters %}<a class="btn outline" href="{{ url_for('main.explore', lang=lang) }}">{{ 'إزالة الفلاتر' if lang == 'ar' else 'Clear' }}</a>{% endif %}
+        </div>
+      </form>
+    </section>
+
+    <div class="filter-tabs reveal">
+      <a class="tab-btn {{ 'active' if content_type == 'all' else '' }}" href="{{ url_for('main.explore', lang=lang, type='all', category=request.args.get('category'), tag=request.args.get('tag'), q=q, sort=sort) }}">{{ 'الكل' if lang == 'ar' else 'All' }}</a>
+      <a class="tab-btn {{ 'active' if content_type == 'articles' else '' }}" href="{{ url_for('main.explore', lang=lang, type='articles', category=request.args.get('category'), tag=request.args.get('tag'), q=q, sort=sort) }}">{{ 'المقالات' if lang == 'ar' else 'Articles' }}</a>
+      <a class="tab-btn {{ 'active' if content_type == 'projects' else '' }}" href="{{ url_for('main.explore', lang=lang, type='projects', category=request.args.get('category'), tag=request.args.get('tag'), q=q, sort=sort) }}">{{ 'المشروعات' if lang == 'ar' else 'Projects' }}</a>
+    </div>
+
+    <div class="result-summary reveal">
+      <strong>{{ articles|length + projects|length }}</strong>
+      <span>{{ 'نتيجة مرتبطة' if lang == 'ar' else 'related results' }}</span>
+    </div>
+
+    {% if articles %}
+      <div class="section-title reveal"><div><span class="section-kicker">{{ 'محتوى معرفي' if lang == 'ar' else 'Knowledge content' }}</span><h2>{{ 'المقالات' if lang == 'ar' else 'Articles' }}</h2></div></div>
+      <div class="grid interactive-grid">
+        {% for article in articles %}{% include 'main/partials_article_card.html' %}{% endfor %}
+      </div>
+    {% endif %}
+
+    {% if projects %}
+      <div class="section-title reveal"><div><span class="section-kicker">{{ 'أعمال تطبيقية' if lang == 'ar' else 'Practical work' }}</span><h2>{{ 'المشروعات' if lang == 'ar' else 'Projects' }}</h2></div></div>
+      <div class="grid interactive-grid">
+        {% for project in projects %}{% include 'main/partials_project_card.html' %}{% endfor %}
+      </div>
+    {% endif %}
+
+    {% if not articles and not projects %}
+      <div class="empty-state reveal">
+        <div>🔎</div>
+        <h3>{{ 'لا توجد نتائج' if lang == 'ar' else 'No results found' }}</h3>
+        <p>{{ 'جرّب اختيار قسم آخر أو كلمة مفتاحية مختلفة.' if lang == 'ar' else 'Try another category or tag.' }}</p>
+        <a class="btn" href="{{ url_for('main.explore', lang=lang) }}">{{ 'عرض كل المحتوى' if lang == 'ar' else 'View all content' }}</a>
+      </div>
+    {% endif %}
+  </main>
+
+  <aside class="sidebar explore-sidebar reveal">
+    <div class="side-card">
+      <h3>{{ t.categories }}</h3>
+      {% for c in categories %}
+        <a class="side-link clickable-side-link {{ 'active' if selected_category and selected_category.id == c.id else '' }}" href="{{ url_for('main.explore', lang=lang, category=c.slug, type=content_type, tag=request.args.get('tag'), q=q, sort=sort) }}">
+          <span>{{ c.name(lang) }}</span>
+          <b>{{ category_counts.get(c.id, 0) }}</b>
+        </a>
+      {% endfor %}
+    </div>
+
+    <div class="side-card">
+      <h3>{{ t.keywords }}</h3>
+      <div class="tags clickable-tags">
+        {% for tag in tags %}
+          <a class="{{ 'active' if selected_tag and selected_tag.id == tag.id else '' }}" href="{{ url_for('main.explore', lang=lang, tag=tag.slug, type=content_type, category=request.args.get('category'), q=q, sort=sort) }}">
+            {{ tag.name }}{% if tag_counts.get(tag.id, 0) %}<em>{{ tag_counts.get(tag.id, 0) }}</em>{% endif %}
+          </a>
+        {% endfor %}
+      </div>
+    </div>
+  </aside>
+</section>
+{% endblock %}

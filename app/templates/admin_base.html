@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="{{ lang }}" dir="{{ 'rtl' if is_rtl else 'ltr' }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
+  <title>{% block page_title %}{{ t.admin }} - {{ t.site_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="admin-body">
+  <a class="skip-link" href="#admin-content">{{ 'تجاوز إلى المحتوى' if lang == 'ar' else 'Skip to content' }}</a>
+  <aside class="admin-sidebar" aria-label="{{ 'قائمة لوحة التحكم' if lang == 'ar' else 'Admin menu' }}">
+    <div class="admin-brand"><span class="logo" aria-hidden="true">▥</span><div><h2>{{ t.admin }}</h2><small>{{ t.site_name }}</small></div></div>
+    <a class="{{ 'active' if request.endpoint == 'admin.dashboard' else '' }}" href="{{ url_for('admin.dashboard', lang=lang) }}">📈 {{ t.dashboard }}</a>
+    <a class="{{ 'active' if request.endpoint == 'admin.analytics' else '' }}" href="{{ url_for('admin.analytics', lang=lang) }}">👁 {{ t.analytics }}</a>
+    <a class="{{ 'active' if request.endpoint in ['admin.articles','admin.article_form'] else '' }}" href="{{ url_for('admin.articles', lang=lang) }}">📝 {{ t.articles }}</a>
+    <a class="{{ 'active' if request.endpoint in ['admin.projects','admin.project_form'] else '' }}" href="{{ url_for('admin.projects', lang=lang) }}">🧩 {{ t.projects }}</a>
+    <a class="{{ 'active' if request.endpoint == 'admin.coding' else '' }}" href="{{ url_for('admin.coding', lang=lang) }}">🏷 {{ 'الترميز' if lang == 'ar' else 'Coding' }}</a>
+    <a class="{{ 'active' if request.endpoint == 'admin.newsletter' else '' }}" href="{{ url_for('admin.newsletter', lang=lang) }}">✉ {{ t.newsletter }}</a>
+    <a class="{{ 'active' if request.endpoint == 'admin.messages' else '' }}" href="{{ url_for('admin.messages', lang=lang) }}">💬 {{ t.messages }}</a>
+    <a class="{{ 'active' if request.endpoint in ['admin.comments','admin.toggle_comment_read','admin.delete_comment','admin.update_comment_status'] else '' }}" href="{{ url_for('admin.comments', lang=lang) }}">🗨 {{ t.comments }}{% if stats is defined and stats.unread_comments %} <span class="admin-badge">{{ stats.unread_comments }}</span>{% endif %}</a>
+    {% if session.get('role') == 'admin' %}
+    <a class="{{ 'active' if request.endpoint == 'admin.users' else '' }}" href="{{ url_for('admin.users', lang=lang) }}">👥 {{ 'المستخدمون' if lang == 'ar' else 'Users' }}</a>
+    <a class="{{ 'active' if request.endpoint == 'admin.audit_logs' else '' }}" href="{{ url_for('admin.audit_logs', lang=lang) }}">🧾 {{ 'سجل العمليات' if lang == 'ar' else 'Audit log' }}</a>
+    {% endif %}
+    <hr>
+    <a href="{{ url_for('main.home', lang=lang) }}">🏠 {{ t.home }}</a>
+    <a href="{{ url_for('auth.logout', lang=lang) }}">↩ {{ t.logout }}</a>
+  </aside>
+
+  <main id="admin-content" class="admin-main" tabindex="-1">
+    <div class="admin-top"><div><span>{{ 'لوحة تحكم احترافية وآمنة' if lang == 'ar' else 'Professional and secure dashboard' }}</span><strong>{{ t.site_name }}</strong></div><button class="icon-btn" type="button" data-theme-toggle aria-label="{{ 'تبديل الوضع' if lang == 'ar' else 'Toggle theme' }}">☾</button></div>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div aria-live="polite">{% for cat,msg in messages %}<div class="flash {{cat}}" role="alert">{{msg}}</div>{% endfor %}</div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+
+  <script>window.csrfToken = "{{ csrf_token() }}";</script>
+  <script src="{{ url_for('static', filename='js/main.js') }}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

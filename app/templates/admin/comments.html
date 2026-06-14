@@ -1,0 +1,73 @@
+{% extends 'admin_base.html' %}
+{% block content %}
+<div class="admin-head">
+  <div>
+    <span class="section-kicker">{{ 'تعليقات خاصة لا تظهر للعامة' if lang == 'ar' else 'Private comments hidden from public pages' }}</span>
+    <h1>{{ t.comments }}</h1>
+  </div>
+  <form method="post" action="{{ url_for('admin.mark_all_comments_read', lang=lang) }}" class="inline safe"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <button type="submit">{{ 'تعليم الكل كمقروء' if lang == 'ar' else 'Mark all as read' }}</button>
+  </form>
+</div>
+
+<form method="get" class="table-tools admin-filter-bar">
+  <input type="search" name="q" value="{{ q }}" placeholder="{{ 'بحث بالاسم أو البريد أو نص التعليق...' if lang == 'ar' else 'Search by name, email, or comment text...' }}">
+  <select name="type">
+    <option value="all" {{ 'selected' if content_type == 'all' else '' }}>{{ 'كل الأنواع' if lang == 'ar' else 'All types' }}</option>
+    <option value="article" {{ 'selected' if content_type == 'article' else '' }}>{{ t.articles }}</option>
+    <option value="project" {{ 'selected' if content_type == 'project' else '' }}>{{ t.projects }}</option>
+  </select>
+  <select name="status">
+    <option value="all" {{ 'selected' if status == 'all' else '' }}>{{ 'كل الحالات' if lang == 'ar' else 'All statuses' }}</option>
+    <option value="new" {{ 'selected' if status in ['new','unread'] else '' }}>{{ 'جديد' if lang == 'ar' else 'New' }}</option>
+    <option value="read" {{ 'selected' if status == 'read' else '' }}>{{ 'مقروء' if lang == 'ar' else 'Read' }}</option>
+    <option value="archived" {{ 'selected' if status == 'archived' else '' }}>{{ 'مؤرشف' if lang == 'ar' else 'Archived' }}</option>
+    <option value="spam" {{ 'selected' if status == 'spam' else '' }}>{{ 'مزعج' if lang == 'ar' else 'Spam' }}</option>
+  </select>
+  <button class="btn small" type="submit">{{ t.search }}</button>
+  <a class="btn small ghost dark-ghost" href="{{ url_for('admin.comments', lang=lang) }}">{{ 'مسح الفلتر' if lang == 'ar' else 'Clear' }}</a>
+</form>
+
+<div class="table-card">
+  <table data-table>
+    <tr>
+      <th>{{ 'الحالة' if lang == 'ar' else 'Status' }}</th>
+      <th>{{ 'النوع' if lang == 'ar' else 'Type' }}</th>
+      <th>{{ 'العنصر' if lang == 'ar' else 'Item' }}</th>
+      <th>{{ t.name }}</th>
+      <th>Email</th>
+      <th>{{ t.comment }}</th>
+      <th>IP</th>
+      <th>Date</th>
+      <th>{{ t.actions }}</th>
+    </tr>
+    {% for item in items %}
+    <tr class="{{ 'unread-row' if item.status == 'new' else '' }}">
+      <td><span class="status {{ 'draft' if item.status == 'new' else ('warning' if item.status == 'spam' else 'ok') }}">{{ {'new':'جديد','read':'مقروء','archived':'مؤرشف','spam':'مزعج'}.get(item.status, item.status) if lang == 'ar' else item.status|title }}</span></td>
+      <td>{{ t.articles if item.content_type == 'article' else t.projects }}</td>
+      <td>
+        {% if item.content_type == 'article' and item.article and not item.article.deleted_at %}
+          <a href="{{ url_for('main.article_detail', lang=lang, slug=item.article.slug) }}" target="_blank" rel="noopener noreferrer">{{ item.article.title(lang) }}</a>
+        {% elif item.content_type == 'project' and item.project and not item.project.deleted_at %}
+          <a href="{{ url_for('main.project_detail', lang=lang, slug=item.project.slug) }}" target="_blank" rel="noopener noreferrer">{{ item.project.title(lang) }}</a>
+        {% else %}
+          <span class="muted">{{ 'عنصر مؤرشف' if lang == 'ar' else 'Archived item' }}</span>
+        {% endif %}
+      </td>
+      <td>{{ item.name }}</td>
+      <td>{{ item.email or '-' }}</td>
+      <td class="comment-cell">{{ item.comment }}{% if item.internal_note %}<div class="hint">{{ 'ملاحظة داخلية:' if lang == 'ar' else 'Internal note:' }} {{ item.internal_note }}</div>{% endif %}</td>
+      <td>{{ item.ip_address or '-' }}</td>
+      <td>{{ item.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+      <td>
+        <form method="post" action="{{ url_for('admin.update_comment_status', lang=lang, item_id=item.id) }}" class="inline safe"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="status" value="read"><button type="submit">{{ 'مقروء' if lang == 'ar' else 'Read' }}</button></form>
+        <form method="post" action="{{ url_for('admin.update_comment_status', lang=lang, item_id=item.id) }}" class="inline safe"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><input type="hidden" name="status" value="spam"><button type="submit">{{ 'مزعج' if lang == 'ar' else 'Spam' }}</button></form>
+        <form method="post" action="{{ url_for('admin.delete_comment', lang=lang, item_id=item.id) }}" class="inline"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}"><button type="submit">{{ 'أرشفة' if lang == 'ar' else 'Archive' }}</button></form>
+      </td>
+    </tr>
+    {% else %}
+    <tr><td colspan="9" class="hint">{{ 'لا توجد تعليقات حالياً' if lang == 'ar' else 'No comments yet' }}</td></tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
